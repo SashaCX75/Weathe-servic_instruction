@@ -61,6 +61,44 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+    .image-container img:hover {
+      transform: scale(1.05);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+    }
     .language-switch {
       margin: 10px 0;
       text-align: right;
@@ -98,24 +136,25 @@
   
   <h2>Overview</h2>
   <p>Welcome to the Weather Service app! This app provides real-time weather information for cities around the world, allowing you to choose where you want to get your information from.</p>
-   <!-- Images side by side -->
+  
+  <!-- Images side by side -->
   <div class="image-container">
-    <img src="images/clouds.gif" alt="Overview of Weather App 1">
-    <img src="images/Interface.gif" alt="Overview of Weather App 2">
+    <img src="images/clouds.gif" alt="Overview of Weather App 1" class="open-modal" data-modal="modal_img_app_1">
+    <img src="images/Interface.gif" alt="Overview of Weather App 2" class="open-modal" data-modal="modal_img_app_2">
   </div>
   <p>The application was designed as an intermediate between the weather server and watch faces. Therefore, it can run in the background and write data to the file available for watch faces. Unfortunately, since the background time is limited, it does not always have time to receive and process data from the server.</p>
 
   <h2>Setup and customisation</h2>
   <p>After installing the app on your watch, launch the app and go to the settings. If there is no message that the settings have synchronised, it means that the app-side part of the app is not working correctly. Usually it helps to reset the Zepp or restart the phone.</p>
-   <!-- Single centered image -->
+  <!-- Single centered image -->
   <div class="single-image-container">
-    <img src="images/synchronisation.png" alt="Synchronisation settings">
+    <img src="images/synchronisation.png" alt="Synchronisation settings" class="open-modal" data-modal="modal_synchronisation">
   </div>
   <p>You can define the city coordinates on the watch on the settings page (long and does not work indoors) or on your phone (in the settings in the Zepp app). If you have defined the coordinates on your phone, you need to enter the application settings on the watch for the changes to take effect.</p>
   <div class="image-container">
-    <img src="images/settings_app_1.png" alt="Settings App 1">
-    <img src="images/settings_app_2.png" alt="Settings App 2">
-    <img src="images/Settings_Zepp.png" alt="Settings Zepp">
+    <img src="images/settings_app_1.png" alt="Settings App 1" class="open-modal" data-modal="modal_img_settings_app_1">
+    <img src="images/settings_app_2.png" alt="Settings App 2" class="open-modal" data-modal="modal_img_settings_app_2">
+    <img src="images/Settings_Zepp.png" alt="Settings Zepp" class="open-modal" data-modal="modal_img_settings_zepp">
   </div>
   
   <h2>Using the application</h2>
@@ -188,8 +227,69 @@ function read_weather_file() {
     </ul>
   </div>
 
+  <!-- Modals for images -->
+  <div id="modal_img_app_1" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/clouds.gif" alt="Full-size Overview of Weather App 1">
+  </div>
+  <div id="modal_img_app_2" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/Interface.gif" alt="Full-size Overview of Weather App 2">
+  </div>
+  
+  <div id="modal_synchronisation" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/synchronisation.png" alt="Full-size Overview of Weather App 2">
+  </div>
+  
+  <div id="modal_img_settings_app_1" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/settings_app_1.png" alt="Full-size Overview of Weather App 2">
+  </div>
+  <div id="modal_img_settings_app_2" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/settings_app_2.png" alt="Full-size Overview of Weather App 2">
+  </div>
+  <div id="modal_img_settings_zepp" class="modal">
+    <button class="modal-close">&times;</button>
+    <img src="images/Settings_Zepp.png" alt="Full-size Overview of Weather App 2">
+  </div>
+
   <!-- Подключение JS для Prism.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-javascript.min.js"></script>
+
+  <script>
+    // Открытие модального окна
+    document.querySelectorAll('.open-modal').forEach(image => {
+      image.addEventListener('click', () => {
+        const modalId = image.getAttribute('data-modal');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add('active');
+        }
+      });
+    });
+
+    // Закрытие модального окна
+    document.querySelectorAll('.modal-close').forEach(button => {
+      button.addEventListener('click', () => {
+        const modal = button.closest('.modal');
+        if (modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    // Закрытие модального окна при клике вне изображения
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+  
 </body>
 </html>
