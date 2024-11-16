@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather service (instructions)</title>
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <!-- Подключение CSS для Prism.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: #fff;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    ul {
+      list-style-type: square;
+      margin-left: 20px;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    /* Добавляем отступ для каждого параграфа */
+    p {
+      text-indent: 20px;
+    }
+    /* Стили для изображений */
+    .image-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .image-container img {
+      width: auto;
+      height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .single-image-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .single-image-container img {
+      width: auto;
+      height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .language-switch {
+      margin: 10px 0;
+      text-align: right;
+    }
+    .language-switch a {
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .language-switch a:hover {
+      background-color: #2980b9;
+    }
+    .language-switch img {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Language Switch Button -->
+  <div class="language-switch">
+    <a href="../ru/index.html">
+      <img src="images/language.svg" alt="Switch language icon"> Русский
+    </a>
+  </div>
+
+  <h1>Weather service</h1>
+  
+  <h2>Overview</h2>
+  <p>Welcome to the Weather Service app! This app provides real-time weather information for cities around the world, allowing you to choose where you want to get your information from.</p>
+   <!-- Images side by side -->
+  <div class="image-container">
+    <img src="images/clouds.gif" alt="Overview of Weather App 1">
+    <img src="images/Interface.gif" alt="Overview of Weather App 2">
+  </div>
+  <p>The application was designed as an intermediate between the weather server and watch faces. Therefore, it can run in the background and write data to the file available for watch faces. Unfortunately, since the background time is limited, it does not always have time to receive and process data from the server.</p>
+
+  <h2>Setup and customisation</h2>
+  <p>After installing the app on your watch, launch the app and go to the settings. If there is no message that the settings have synchronised, it means that the app-side part of the app is not working correctly. Usually it helps to reset the Zepp or restart the phone.</p>
+   <!-- Single centered image -->
+  <div class="single-image-container">
+    <img src="images/synchronisation.png" alt="Synchronisation settings">
+  </div>
+  <p>You can define the city coordinates on the watch on the settings page (long and does not work indoors) or on your phone (in the settings in the Zepp app). If you have defined the coordinates on your phone, you need to enter the application settings on the watch for the changes to take effect.</p>
+  <div class="image-container">
+    <img src="images/settings_app_1.png" alt="Settings App 1">
+    <img src="images/settings_app_2.png" alt="Settings App 2">
+    <img src="images/Settings_Zepp.png" alt="Settings Zepp">
+  </div>
+  
+  <h2>Using the application</h2>
+  <p>On the application settings page, you can select the source from which you want to receive weather data. Please note that different weather sources provide a different set of weather data. For some sources you need to register on the website and get a key.</p>
+  <ul>
+      <li><a href="https://home.openweathermap.org/api_keys" target="_blank">Api key OpenWeather</a></li>
+      <li><a href="https://developer.accuweather.com/user/me/apps" target="_blank">Api key AccuWeather</a></li>
+    </ul>
+  <p>If you don't use a watch face that receives data from this app, you don't need to enable data updates in the background.</p>
+  <p>Weather data is updated in such cases:</p>
+  <ul>
+    <li>when the coordinates or weather server changes.</li>
+    <li>when you start the application (but not more often than once every 15 minutes).</li>
+    <li>when working in the background (weather once per hour, forecast once every 3 hours).</li>
+  </ul>
+  
+  <h2>Using application data in watch faces</h2>
+  <p>To use application data in your watch face you must load the json file with the data stored in the application. This can be done using this function:</p>
+
+  <!-- JavaScript Code Block with Prism.js -->
+  <pre><code class="language-javascript">
+function read_weather_file() {
+  let str_result = "";
+  try {
+    const file_name = "weather.json";
+    const mini_app_id = 27343;
+
+    const [fs_stat, err] = hmFS.stat(file_name, {
+      appid: mini_app_id,
+    });
+    if (err == 0) {
+      console.log("--->size_alt:", fs_stat.size);
+
+      const fh = hmFS.open(file_name, hmFS.O_RDONLY, {
+        appid: mini_app_id,
+      });
+
+      const len = fs_stat.size;
+      let array_buffer = new ArrayBuffer(len);
+      hmFS.read(fh, array_buffer, 0, len);
+      hmFS.close(fh);
+      str_result = arrayBufferToCyrillic(array_buffer);
+      console.log(`array_buffer = ${array_buffer}`);
+      console.log(`str_result = ${str_result}`);
+      return str_result;
+    } else {
+      console.log("err:", err);
+    }
+  } catch (error) {
+    console.log("error:", error);
+    console.log("FAIL: No access to hmFS.");
+  }
+  return "";
+}
+  </code></pre>
+  
+  <p>file_name = ‘weather.json’ – for current weather data.</p>
+  <p>file_name = ‘forecast.json’ – for weather forecast data.</p>
+  <p>It is also recommended to check the data update time. This data is available in the file itself, and you can also find out the time of its change in the file properties.</p>
+  <p>You can learn about the structure of json files and the parameters available in them in the documentation</p>
+
+  <div class="documentation-links">
+    <h2>Links to documentation and examples</h2>
+    <p>Refer to the following documentation for further assistance:</p>
+    <ul>
+      <li><a href="files/Weather data.xlsx" target="_blank">Parameters of json files with data</a></li>
+      <li><a href="files/Weather icons.xlsx" target="_blank">Description of weather icons (weatherIcon parameter)</a></li>
+      <li><a href="files/Meteo.zip" target="_blank">Example of watch face using these applications (by leXxiR)</a></li>
+      <li><a href="https://github.com/SashaCX75/Weather-service" target="_blank">Application source code</a></li>
+    </ul>
+  </div>
+
+  <!-- Подключение JS для Prism.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-javascript.min.js"></script>
+</body>
+</html>
