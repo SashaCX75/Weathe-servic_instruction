@@ -64,6 +64,9 @@
     .image-container img:hover {
       transform: scale(1.05);
     }
+    .single-image-container img:hover {
+      transform: scale(1.05);
+    }
     .modal {
       display: none;
       position: fixed;
@@ -180,7 +183,7 @@ function read_weather_file() {
   let str_result = "";
   try {
     const file_name = "weather.json";
-    const mini_app_id = 27343;
+    const mini_app_id = 1042817;
 
     const [fs_stat, err] = hmFS.stat(file_name, {
       appid: mini_app_id,
@@ -213,7 +216,8 @@ function read_weather_file() {
   
   <p>file_name = ‘weather.json’ – for current weather data.</p>
   <p>file_name = ‘forecast.json’ – for weather forecast data.</p>
-  <p>It is also recommended to check the data update time. This data is available in the file itself, and you can also find out the time of its change in the file properties.</p>
+  <p>Depending on the selected site, the data in the forecast may start from the current day or from tomorrow. Be sure to check the date when displaying the forecast.</p>
+  <p>It is also recommended to check the update time of the data to make sure that it is not out of date. The update time is in the file itself, and you can also check the file properties to see when it has changed.</p>
   <p>You can learn about the structure of json files and the parameters available in them in the documentation</p>
 
   <div class="documentation-links">
