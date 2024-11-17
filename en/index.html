@@ -40,8 +40,9 @@
     /* Стили для изображений */
     .image-container {
       display: flex;
-      justify-content: center;
-      gap: 20px;
+      flex-wrap: wrap; /* Позволяет изображениям переноситься на новую строку */
+      justify-content: center; /* Выравнивает изображения по центру */
+      gap: 20px; /* Добавляет отступы между изображениями */
       margin: 20px 0;
     }
     .image-container img {
